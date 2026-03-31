@@ -1,6 +1,4 @@
 # Attenzo
-
-
 # 🚀 QR Attendance System (Full-Stack)
 
 A full-stack QR-based attendance tracking system built with **NestJS, React, React Native, and PostgreSQL**.
@@ -41,7 +39,6 @@ This project demonstrates real-world implementation of **authentication, role-ba
 
 * Relational database design
 * Users and attendance tracking
-* Efficient querying and storage
 
 ---
 
@@ -167,26 +164,14 @@ Implemented using:
 
 ---
 
-## 📸 Screenshots (Optional)
-
-*Add screenshots of your dashboard and mobile app here*
-
----
-
-## 🎥 Demo (Recommended)
-
-*Add a short demo video link (Google Drive / YouTube)*
-
----
-
 ## 🌐 Deployment
 
-| Service  | Platform              |
-| -------- | --------------------- |
-| Backend  | Railway / Render      |
-| Database | Supabase (PostgreSQL) |
-| Web App  | Vercel                |
-| Mobile   | Expo APK              |
+| Service  | Platform                           |
+| -------- | ---------------------------------- |
+| Backend  | Railway / Render                   |
+| Database | PostgreSQL (local or cloud-hosted) |
+| Web App  | Vercel                             |
+| Mobile   | Expo APK                           |
 
 ---
 
@@ -208,6 +193,7 @@ Implemented using:
 ## 📄 License
 
 This project is for portfolio and educational purposes.
+
 
 
 Demo video (VERY important)
