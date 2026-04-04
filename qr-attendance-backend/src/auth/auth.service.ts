@@ -12,7 +12,7 @@ export class AuthService {
   ) {}
 
   // 🔐 GENERATE TOKENS
-  private generateTokens(user: any) {
+  private async generateTokens(user: any) {
     const payload = {
       sub: user.id,
       email: user.email,
@@ -29,8 +29,30 @@ export class AuthService {
       expiresIn: '7d',
     });
 
+    // 🔥 STORE refresh token in DB (hashed)
+    await this.usersService.updateRefreshToken(user.id, refresh_token);
+
     return { access_token, refresh_token };
   }
+  // private generateTokens(user: any) {
+  //   const payload = {
+  //     sub: user.id,
+  //     email: user.email,
+  //     role: user.role,
+  //   };
+
+  //   const access_token = this.jwtService.sign(payload, {
+  //     secret: jwtConstants.secret,
+  //     expiresIn: '15m',
+  //   });
+
+  //   const refresh_token = this.jwtService.sign(payload, {
+  //     secret: jwtConstants.refreshSecret,
+  //     expiresIn: '7d',
+  //   });
+
+  //   return { access_token, refresh_token };
+  // }
 
   // REGISTER
   async register(data: any) {
@@ -57,18 +79,57 @@ export class AuthService {
     return this.generateTokens(user);
   }
 
-  async refreshToken(token: string) {
+  async logout(userId: number) {
+    await this.usersService.updateRefreshToken(userId, null);
+
+    return {
+      message: 'Logged out successfully',
+    };
+  }
+
+  // async refreshToken(token: string) {
+  //   try {
+  //     const payload = this.jwtService.verify(token, {
+  //       secret: jwtConstants.refreshSecret,
+  //     });
+
+  //     const user = await this.usersService.findByEmail(payload.email);
+
+  //     if (!user) throw new UnauthorizedException();
+
+  //     // generate new access token only
+  //     const access_token = this.jwtService.sign(
+  //       {
+  //         sub: user.id,
+  //         email: user.email,
+  //         role: user.role,
+  //       },
+  //       {
+  //         secret: jwtConstants.secret,
+  //         expiresIn: '15m',
+  //       },
+  //     );
+
+  //     return { access_token };
+  //   } catch (e) {
+  //     throw new UnauthorizedException('Invalid refresh token');
+  //   }
+  // }
+  async refreshToken(refreshToken: string) {
     try {
-      const payload = this.jwtService.verify(token, {
+      const payload = this.jwtService.verify(refreshToken, {
         secret: jwtConstants.refreshSecret,
       });
 
-      const user = await this.usersService.findByEmail(payload.email);
+      // 🔥 check DB (not just JWT)
+      const user = await this.usersService.getUserIfRefreshTokenMatches(
+        payload.email,
+        refreshToken,
+      );
 
-      if (!user) throw new UnauthorizedException();
+      if (!user) throw new UnauthorizedException('Access denied');
 
-      // generate new access token only
-      const access_token = this.jwtService.sign(
+      const newAccessToken = this.jwtService.sign(
         {
           sub: user.id,
           email: user.email,
@@ -80,8 +141,8 @@ export class AuthService {
         },
       );
 
-      return { access_token };
-    } catch (e) {
+      return { access_token: newAccessToken };
+    } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
   }

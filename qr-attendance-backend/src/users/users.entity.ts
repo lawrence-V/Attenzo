@@ -4,7 +4,6 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class User {
-
   // Primary key (auto increment)
   @PrimaryGeneratedColumn()
   id: number;
@@ -24,4 +23,7 @@ export class User {
   // Role (admin or user)
   @Column({ default: 'user' })
   role: string;
+
+  @Column({ nullable: true })
+  hashedRefreshToken: string;
 }
